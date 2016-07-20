@@ -1,0 +1,45 @@
+{
+  "name": "nativescript-ably",
+  "version": "0.0.1",
+  "description": "A wrapper for ably.io realtime comunication system",
+  "main": "ably.js",
+  "nativescript": {
+    "platforms": {
+      "android": "2.0.0"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atende/nativescript-ably.git"
+  },
+  "keywords": [
+    "NativeScript",
+    "JavaScript",
+    "Android",
+    "iOS",
+    "Realtime",
+    "PubSub",
+    "Ably"
+  ],
+  "author": {
+    "name": "Giovanni",
+    "email": "giovanni@atende.info"
+  },
+  "bugs": {
+    "url": "https://github.com/atende/nativescript-ably/issues"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/atende/nativescript-ably/blob/master/LICENSE"
+  },
+  "homepage": "https://github.com/atende/nativescript-ably",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "tns-core-modules": "^2.1.0",
+    "tns-platform-declarations": "^2.0.0",
+    "typescript": "^1.8.10"
+  }
+}
