@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A wrapper for ably.io realtime comunication system",
   "main": "ably.js",
+  "typings": "ably.d.ts",
   "nativescript": {
     "platforms": {
       "android": "2.0.0"
@@ -41,5 +42,8 @@
     "tns-core-modules": "^2.1.0",
     "tns-platform-declarations": "^2.0.0",
     "typescript": "^1.8.10"
+  },
+  "dependencies": {
+    "rxjs": ">=5.0.0-beta"
   }
 }

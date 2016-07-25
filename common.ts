@@ -1,3 +1,4 @@
+import {Observable} from "rxjs/Rx";
 export interface ClientOptions {
     key?: string
     token?: string,
@@ -94,19 +95,19 @@ export interface LasConnectionDetails {
 export type ConnectionState = 'initialized' | 'connecting' | 'connected' | 'disconnected' | 'suspended' | 'closing' | 'closed' | 'failed';
 export type ChannelState = 'initialized' | 'attaching' | 'attached' | 'detaching' | 'detached' | 'failed'
 export type ErrorCallBack = (err: ErrorInfo) => void
-export abstract class Connection {
+export interface Connection {
     id: string
     state: ConnectionState
     errorReason: ErrorInfo
     key: string
     recoverKey: string
     serial: number
-    abstract connect();
-    abstract close();
-    abstract on(listener: (stateChange: ConnectionStateChange) => void, state?: ConnectionState)
-    abstract once(listener: (stateChange: ConnectionStateChange) => void, state?: ConnectionState)
-    abstract off(listener: (stateChange: ConnectionStateChange) => void, state?: ConnectionState)
-    abstract ping(callback: ErrorCallBack)
+    connect();
+    close();
+    on(state?: ConnectionState): Observable<ConnectionStateChange>
+    once(state?: ConnectionState): Observable<ConnectionStateChange>
+    off(state?: ConnectionState): Observable<ConnectionStateChange>
+    ping(): Observable<void>
    
 }
 
@@ -137,13 +138,17 @@ export interface Channel {
     errorReason: ErrorInfo
     name: string
     presence: Presence
-    publishData(name: string, data: any, callback?: ErrorCallBack)
-    publishMessage(message: Message | Message[], callback?: ErrorCallBack)
-    subscribe(listener: (message: Message) => void, name?: string | string[])
+    publishData(name: string, data: any): Observable<void>
+    publishMessage(message: Message | Message[]): Observable<void>
+    subscribe(name?: string | string[]): Observable<Message>
+    /**
+     * TODO Unsubscribe is not compatible with RXStream API. 
+     * Maybe a custom observable that intercepts the unsubscribe on the observable?
+     */
     unsubscribe(listener?: (message: Message) => void, name?: string)
-    on(listener: (state: ChannelState) => void, state?: ChannelState)
-    once(listener: (state: ChannelState) => void, state?: ChannelState)
-    off(listener: (state: ChannelState) => void, state?: ChannelState)
+    on(state?: ChannelState): Observable<ChannelState>
+    once(state?: ChannelState): Observable<ChannelState>
+    off(state?: ChannelState): Observable<ChannelState>
 }
 /**
  * TODO how to get clientId?

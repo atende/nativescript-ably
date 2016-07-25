@@ -64,9 +64,11 @@ declare module io {
                 }
                 export class ChannelState {
                     static extend: any
+                    constructor(implementation: any)
                 }
                 export class ChannelStateListener {
                     static extend: any
+                    constructor(implementation: any)
                 }
                 export class CompletionListener {
                     constructor(implementation: any)
@@ -74,15 +76,17 @@ declare module io {
                 }
                 export class Connection {
                     static extend: any
+                    constructor(implementation: any)
                 }
                 export class ConnectionState {
                     static extend: any
+                    constructor(implementation: any)
                 }
                 export class ConnectionStateListener {
                     constructor(implementation: any)
                 }
                 export class Presence {
-
+                    constructor(implementation: any)
                 }
             }
             export module types {

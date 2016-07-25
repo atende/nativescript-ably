@@ -1,4 +1,8 @@
-import * as common from './ably.common';
+/**
+ * TODO Problem: Unsubscribe on observable and in the ably android are not compatible. The user needs to unsubscribe on both?
+ */
+import * as common from "./common";
+import {Observable} from "rxjs";
 export function createRealtimeConnection(options: string | common.ClientOptions): AblyRealtime {
 
     return new AblyRealtime(options);
@@ -21,7 +25,66 @@ export class AblyRealtime extends common.AblyRealtime {
     }
 }
 
-class Connection extends common.Connection {
+export function createConnectionStateListener(callback: (param: any) => void): any {
+export function createConnectionStateListener(callback: (param: any) => void): any {
+    let listener = new io.ably.lib.realtime.ConnectionStateListener({
+        onConnectionStateChanged: function (changed: any) {
+            callback(changed)
+        }
+    })
+    return listener;
+}
+
+export function createChannelStateListener(callback: (param: any) => void): any {
+    let listener = new io.ably.lib.realtime.ChannelStateListener({
+        onChannelStateChanged: function (changed: any) {
+            callback(changed)
+        }
+    })
+    return listener;
+}
+
+export class EventEmitter<Filter, Event> {
+    protected facade: any;
+
+    factory: (callback: (param: any) => void) => any
+
+    on(listenerType?: Filter): Observable<Event> {
+        return Observable.create((observer) => {
+            let callback = this.factory((param) => observer.next(param))
+            if (listenerType) {
+                this.facade.on(listenerType, callback);
+            } else {
+                this.facade.on(callback)
+            }
+        })
+    }
+    off(listenerType?: Filter): Observable<Event> {
+        return Observable.create((observer) => {
+            let callback = this.factory((param) => observer.next(param))
+            if (listenerType) {
+                this.facade.off(listenerType, callback);
+            } else {
+                this.facade.off(callback)
+            }
+        })
+    }
+    once(listenerType?: Filter): Observable<Event> {
+        return Observable.create((observer) => {
+            let callback = this.factory((param) => observer.next(param))
+            if (listenerType) {
+                this.facade.once(listenerType, callback);
+            } else {
+                this.facade.once(callback)
+            }
+        })
+    }
+}
+
+export class Connection extends EventEmitter<common.ConnectionState, common.ConnectionStateChange> implements common.Connection {
+
+    factory = createConnectionStateListener
+
     /**
     * Implementation for variables
     */
@@ -43,75 +106,37 @@ class Connection extends common.Connection {
     get serial(): number {
         return this.facade.serial
     }
-    constructor(private facade: any) {
+    constructor(protected facade: any) {
         super()
     }
-    on(listener: (stateChange: common.ConnectionStateChange) => void, state?: common.ConnectionState) {
-        let callback = new io.ably.lib.realtime.ConnectionStateListener({
-            onConnectionStateChanged: function (changed: any) {
-                listener(changed)
-            }
-        })
-        if (state) {
-            this.facade.on(state, callback);
-        } else {
-            this.facade.on(callback)
-        }
 
-    }
-
-    once(listener: (stateChange: common.ConnectionStateChange) => void, state?: common.ConnectionState) {
-        let callback = new io.ably.lib.realtime.ConnectionStateListener({
-            onConnectionStateChanged: function (changed: any) {
-                listener(changed)
-            }
-        })
-        if (state) {
-            this.facade.once(state, callback);
-        } else {
-            this.facade.once(callback)
-        }
-
-    }
-
-    off(listener: (stateChange: common.ConnectionStateChange) => void, state?: common.ConnectionState) {
-        let callback = new io.ably.lib.realtime.ConnectionStateListener({
-            onConnectionStateChanged: function (changed: any) {
-                listener(changed)
-            }
-        })
-        if (state) {
-            this.facade.off(state, callback);
-        } else {
-            this.facade.off(callback)
-        }
-
-    }
-
-    ping(callback: (err: common.ErrorInfo) => void) {
-        let listener = new io.ably.lib.realtime.CompletionListener({
-            onSuccess: function () {
-                callback(null)
-            },
-            onError(reason: any) {
-                callback(reason)
-            }
-        })
-        this.facade.ping(listener)
-    }
     connect() {
         this.facade.connect();
     }
     close() {
         this.facade.close();
     }
+    ping(): Observable<void> {
+        return Observable.create((observer) => {
+            let listener = new io.ably.lib.realtime.CompletionListener({
+                onSuccess: function () {
+                    observer.next()
+                },
+                onError(reason: any) {
+                    observer.throw(reason)
+                }
+            })
+            this.facade.ping(listener)
+        })
+
+    }
 
 }
 
-export class Channel implements common.Channel {
-
-    constructor(private facade: any) {
-
+export class Channel extends EventEmitter<common.ChannelState, common.ChannelState> implements common.Channel {
+    factory = createChannelStateListener
+    constructor(protected facade: any) {
+        super()
     }
 
     get state(): string {
@@ -127,49 +152,48 @@ export class Channel implements common.Channel {
         return this.facade.presence
     }
 
-    publishData(name: string, data: any, callback?: (err: common.ErrorInfo) => void) {
-        if (callback) {
+    publishData(name: string, data: any): Observable<void> {
+        return Observable.create(observer => {
             let listener = new io.ably.lib.realtime.CompletionListener({
                 onSuccess: function () {
-                    callback(null)
+                    observer.next()
                 },
                 onError: function (error: any) {
-                    callback(error)
+                    observer.throw(error)
                 }
             })
-            this.facade.publish(name, data, callback)
-        }else{
-            this.facade.publish(name, data)
-        }
-    
+            this.facade.publish(name, data, listener)
+        })
+
+
     }
-    publishMessage(message: common.Message | common.Message[], callback?: (err: common.ErrorInfo) => void) {
-        if (callback) {
+    publishMessage(message: common.Message | common.Message[]): Observable<void> {
+        return Observable.create(observer => {
             let listener = new io.ably.lib.realtime.CompletionListener({
                 onSuccess: function () {
-                    callback(null)
+                    observer.next()
                 },
                 onError: function (error: any) {
-                    callback(error)
+                    observer.throw(error)
                 }
             })
-            this.facade.publish(message, callback)
-        }else{
-            this.facade.publish(message)
-        }
-    
+            this.facade.publish(message, listener)
+        })
+
     }
-    subscribe(callback: (message: common.Message) => void, name?: string | string[]) {
-        let listener = new io.ably.lib.realtime.Channel.MessageListener({
-            onMessage: function (message: common.Message) {
-                callback(message)
+    subscribe(name?: string | string[]): Observable<common.Message> {
+        return Observable.create(observer => {
+            let listener = new io.ably.lib.realtime.Channel.MessageListener({
+                onMessage: function (message: common.Message) {
+                    observer.next(message)
+                }
+            })
+            if (name) {
+                this.facade.subscribe(name, listener)
+            } else {
+                this.facade.subscribe(listener)
             }
         })
-        if (name) {
-            this.facade.subscribe(name, listener)
-        } else {
-            this.facade.subscribe(listener)
-        }
 
     }
     unsubscribe(callback?: (message: common.Message) => void, name?: string | string[]) {
@@ -186,23 +210,11 @@ export class Channel implements common.Channel {
             this.facade.unsubscribe(listener)
         }
     }
-    on(listener: (state: common.ChannelState) => void, state?: common.ChannelState) {
-
-    }
-    once(listener: (state: common.ChannelState) => void, state?: common.ChannelState) {
-
-    }
-    off(listener: (state: common.ChannelState) => void, state?: common.ChannelState) {
-
-    }
 }
 
 // TODO implementar channels
 export class Channels implements common.Channels {
     constructor(private facade: any) {
-        console.log("Constructed Channels")
-
-        console.log(facade)
     }
     get(channelName: string): Channel {
         let channel = this.facade.get(channelName)

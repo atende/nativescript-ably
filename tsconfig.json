@@ -12,7 +12,8 @@
       "./node_modules/tns-platform-declarations/android17.d.ts",
       "./node_modules/tns-platform-declarations/ios.d.ts",
       "./typings/io.ably.ably.d.ts",
-      "ably.common.ts",
+      "common.ts",
+      "ably.d.ts",
       "ably.android.ts", 
       "ably.ios.ts"
      

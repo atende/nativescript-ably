@@ -1,3 +1,4 @@
+import { Observable } from "rxjs/Rx";
 export interface ClientOptions {
     key?: string;
     token?: string;
@@ -88,19 +89,19 @@ export interface LasConnectionDetails {
 export declare type ConnectionState = 'initialized' | 'connecting' | 'connected' | 'disconnected' | 'suspended' | 'closing' | 'closed' | 'failed';
 export declare type ChannelState = 'initialized' | 'attaching' | 'attached' | 'detaching' | 'detached' | 'failed';
 export declare type ErrorCallBack = (err: ErrorInfo) => void;
-export declare abstract class Connection {
+export interface Connection {
     id: string;
     state: ConnectionState;
     errorReason: ErrorInfo;
     key: string;
     recoverKey: string;
     serial: number;
-    abstract connect(): any;
-    abstract close(): any;
-    abstract on(listener: (stateChange: ConnectionStateChange) => void, state?: ConnectionState): any;
-    abstract once(listener: (stateChange: ConnectionStateChange) => void, state?: ConnectionState): any;
-    abstract off(listener: (stateChange: ConnectionStateChange) => void, state?: ConnectionState): any;
-    abstract ping(callback: ErrorCallBack): any;
+    connect(): any;
+    close(): any;
+    on(state?: ConnectionState): Observable<ConnectionStateChange>;
+    once(state?: ConnectionState): Observable<ConnectionStateChange>;
+    off(state?: ConnectionState): Observable<ConnectionStateChange>;
+    ping(): Observable<void>;
 }
 export interface Channels {
     get(channelName: string): Channel;
@@ -122,13 +123,13 @@ export interface Channel {
     errorReason: ErrorInfo;
     name: string;
     presence: Presence;
-    publishData(name: string, data: any, callback?: ErrorCallBack): any;
-    publishMessage(message: Message | Message[], callback?: ErrorCallBack): any;
-    subscribe(listener: (message: Message) => void, name?: string | string[]): any;
+    publishData(name: string, data: any): Observable<void>;
+    publishMessage(message: Message | Message[]): Observable<void>;
+    subscribe(name?: string | string[]): Observable<Message>;
     unsubscribe(listener?: (message: Message) => void, name?: string): any;
-    on(listener: (state: ChannelState) => void, state?: ChannelState): any;
-    once(listener: (state: ChannelState) => void, state?: ChannelState): any;
-    off(listener: (state: ChannelState) => void, state?: ChannelState): any;
+    on(state?: ChannelState): Observable<ChannelState>;
+    once(state?: ChannelState): Observable<ChannelState>;
+    off(state?: ChannelState): Observable<ChannelState>;
 }
 export declare abstract class AblyRealtime {
     private keyOrOptions;
