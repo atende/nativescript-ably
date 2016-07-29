@@ -1,38 +1,44 @@
-# Develop a NativeScript plugin now (w/ TypeScript)
+# NativeScript Ably Plugin
 
-## Getting started
+A wrapper around ably.io libraries for Android and IOS
 
-1. Download a zip of this seed.
-2. `npm install -g typescript`
-3. `cd ... path/to/unzip/folder ...`
-2. `npm run setup`
-3. Get to work.
+## Strategy
 
-This seed expands on several things [presented here](http://developer.telerik.com/featured/creating-nativescript-plugins-in-typescript/).
+To goal is to separate API from implementation:
 
-## Usage
+* **api** folder is used to common and API declarations
+* **impl** folder is used to the implementation
+* **ably.android.ts and ably.ios.ts** initialize the appropriated implementation for the platform
+* **ably.d.ts** provide typescript definition derived from the API.
 
-The seed is prepared to allow you to test and try out your plugin via the `demo` folder.
-Additionally it provides a proper `.gitignore` to keep GitHub tidy as well as `.npmignore` to ensure everyone is happy when you publish your plugin via npm.
+The application just need to import **nativescript-ably** module.
+Exemple:
 
-### Prepare
+   import {AblyRealtime, Message, ConnectionStateChange, ConnectionState} from "nativescript-ably"
 
-You'll want to change a couple things right away:
+It will import the ably.js file that is generated from ably.android.ts, or ably.ios.ts. Depending on the platform
 
-* Change the name of the plugin all throughout `package.json` (including github repo, etc.) and the filenames.
-* Also in `package.json`, find this line:
+You should not:
 
-```
-"preparedemo": "npm run build; cd demo; tns plugin remove nativescript-yourplugin; tns plugin add ..; tns install",
-```
+    Import the API folder, unless you are exposing the API in a implementation
+    Import the implementation folder, unless you know what you are doing :-)
 
-Replace `nativescript-yourplugin` with your actual plugin name.
+### Demo
+
+[https://github.com/atende/nativescript-ably-demo](https://github.com/atende/nativescript-ably-demo)
 
 ### Typical development workflow:
 
+    git clone https://github.com/atende/nativescript-ably
+    git clone https://github.com/atende/nativescript-ably-demo
+    cd nativescript-ably
+    tsc --watch
+    cd ../nativescript-ably-demo
+    
+
 1. Make changes to plugin files
 2. Make changes in `demo` that would test those changes out
-3. `npm run demo.ios` or `npm run demo.android`  **(must be run from the root directory)**
+3. `npm run live.android` or `npm run live.ios`  **(must be run from the demo directory)**
 
 Those `demo` tasks are just general helpers. You may want to have more granular control on the device and/or emulator you want to run. For that, you can just run things the manual way:
 
@@ -40,8 +46,8 @@ Those `demo` tasks are just general helpers. You may want to have more granular 
 cd demo
 
 // when developing, to ensure the latest code is built into the demo, it's a gaurantee to remove the plugin and add it back
-tns plugin remove nativescript-yourplugin // replace with your plugin name
-tns plugin add ..
+tns plugin remove nativescript-ably // replace with your plugin name
+tns plugin add ../nativescript-ably
 
 // manual platform adds
 tns platform add ios
@@ -62,15 +68,3 @@ When you have everything ready to publish:
 * Bump the version number in `package.json`
 * `npm run build` - **very important** - ensure the latest is built **before** you publish
 * `npm publish`
-
-## Contributing - Want to make the seed better?
-
-Or at least help keep it up to date with NativeScript releases, which would be excellent.
-
-```
-npm install -g typescript  // if you don't already have it
-git clone https://github.com/NathanWalker/nativescript-plugin-seed
-cd nativescript-plugin-seed
-
-// Improve!
-```

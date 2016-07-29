@@ -66,10 +66,3 @@ export interface ClientOptions {
     disconnectedRetryTimeout?: number
     suspendedRetryTimeout?: number
 }
-/**
- * Fabric function for AblyRealtime
- * This function abstract the implementation for android and ios
- */
-export function createRealtimeConnection(options: string | ClientOptions): AblyRealtime {
-    return
-}

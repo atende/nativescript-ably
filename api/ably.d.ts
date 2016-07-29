@@ -1,7 +1,7 @@
 import { Auth, TokenParams, ErrorInfo } from "./common";
 import { Channels } from "./channel";
 import { Connection } from "./connection";
-export declare abstract class AblyRealtime {
+export declare class AblyRealtime {
     private keyOrOptions;
     auth: Auth;
     channels: Channels;
@@ -11,7 +11,7 @@ export declare abstract class AblyRealtime {
     connect(): void;
     close(): void;
     stats(): void;
-    abstract time(callback: (err: ErrorInfo, time: Number) => void): any;
+    time(callback: (err: ErrorInfo, time: Number) => void): void;
 }
 export interface ClientOptions {
     key?: string;
@@ -43,4 +43,3 @@ export interface ClientOptions {
     disconnectedRetryTimeout?: number;
     suspendedRetryTimeout?: number;
 }
-export declare function createRealtimeConnection(options: string | ClientOptions): AblyRealtime;
