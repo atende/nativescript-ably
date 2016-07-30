@@ -52,11 +52,12 @@ export type ConnectionState = 'initialized' | 'connecting' | 'connected' | 'disc
 export interface Connection extends EventEmitter<ConnectionState,ConnectionStateChange> {
     id: string
     state: ConnectionState
-    errorReason: ErrorInfo
+    reason: ErrorInfo
     key: string
     recoverKey: string
     serial: number
     connect();
     close();
+    ping();
    
 }

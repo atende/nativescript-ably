@@ -51,40 +51,63 @@ export enum LogLevel {
 /**
  * Abstract class to construct events in ably realtime
  */
-export abstract class EventEmitter<Filter, Event> {
+export abstract class EventEmitter<Listener, Event> {
     protected facade: any;
 
     protected factory: (callback: (param: any) => void) => any
-
-    on(listenerType?: Filter): Observable<Event> {
+    
+    /**
+	 * Register the given listener for all events
+	 * @param listener
+	 */
+    on(listener?: Listener): Observable<Event> {
         return Observable.create((observer) => {
             let callback = this.factory((param) => observer.next(param))
-            if (listenerType) {
-                this.facade.on(listenerType, callback);
+            if (listener) {
+                this.facade.on(listener, callback);
             } else {
                 this.facade.on(callback)
             }
         })
     }
-    off(listenerType?: Filter): Observable<Event> {
+
+    /**
+	 * Remove registered listeners for a given type. If no type is passed remove all registers
+     * @param listener
+	 */
+    off(listener?: Listener): Observable<Event> {
         return Observable.create((observer) => {
             let callback = this.factory((param) => observer.next(param))
-            if (listenerType) {
-                this.facade.off(listenerType, callback);
+            if (listener) {
+                this.facade.off(listener, callback);
             } else {
                 this.facade.off(callback)
             }
         })
     }
-    once(listenerType?: Filter): Observable<Event> {
+
+    /**
+	 * Register the given listener for a single occurrence the event. All events if no listener
+	 * @param listener
+	 */
+    once(listener?: Listener): Observable<Event> {
         return Observable.create((observer) => {
             let callback = this.factory((param) => observer.next(param))
-            if (listenerType) {
-                this.facade.once(listenerType, callback);
+            if (listener) {
+                this.facade.once(listener, callback);
             } else {
                 this.facade.once(callback)
             }
         })
+    }
+
+    /**
+	 * Emit the given event (broadcasting to registered listeners)
+	 * @param event the Event
+	 * @param args the arguments to pass to listeners
+	 */
+    emit(event: Event, ...args: any[]){
+        this.facade.emit(event, args)
     }
 }
 
