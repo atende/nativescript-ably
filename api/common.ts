@@ -52,8 +52,14 @@ export enum LogLevel {
  * Abstract class to construct events in ably realtime
  */
 export abstract class EventEmitter<Listener, Event> {
-    protected facade: any;
+    /**
+     * Facade is the native implementation to delegate
+     */
+    protected facade: any
 
+    /**
+     * factory is a trick to create the native callback events, and let this class abstract
+     */
     protected factory: (callback: (param: any) => void) => any
     
     /**
@@ -64,7 +70,7 @@ export abstract class EventEmitter<Listener, Event> {
         return Observable.create((observer) => {
             let callback = this.factory((param) => observer.next(param))
             if (listener) {
-                this.facade.on(listener, callback);
+                this.facade.on(listener, callback)
             } else {
                 this.facade.on(callback)
             }
@@ -79,7 +85,7 @@ export abstract class EventEmitter<Listener, Event> {
         return Observable.create((observer) => {
             let callback = this.factory((param) => observer.next(param))
             if (listener) {
-                this.facade.off(listener, callback);
+                this.facade.off(listener, callback)
             } else {
                 this.facade.off(callback)
             }
@@ -94,7 +100,7 @@ export abstract class EventEmitter<Listener, Event> {
         return Observable.create((observer) => {
             let callback = this.factory((param) => observer.next(param))
             if (listener) {
-                this.facade.once(listener, callback);
+                this.facade.once(listener, callback)
             } else {
                 this.facade.once(callback)
             }

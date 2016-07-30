@@ -58,6 +58,6 @@ export interface Connection extends EventEmitter<ConnectionState,ConnectionState
     serial: number
     connect();
     close();
-    ping();
+    ping(): Observable<void>;
    
 }
