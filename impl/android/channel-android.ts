@@ -20,7 +20,7 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
     get state(): string {
         return this.facade.state
     }
-    get errorReason(): ErrorInfo {
+    get reason(): ErrorInfo {
         return this.facade.errorReason
     }
     get name(): string {

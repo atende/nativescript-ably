@@ -111,6 +111,7 @@ export abstract class EventEmitter<Listener, Event> {
 	 * Emit the given event (broadcasting to registered listeners)
 	 * @param event the Event
 	 * @param args the arguments to pass to listeners
+     * TODO Test this on the device (How to serialize this javascript arguments to the native call?)
 	 */
     emit(event: Event, ...args: any[]){
         this.facade.emit(event, args)
@@ -118,7 +119,17 @@ export abstract class EventEmitter<Listener, Event> {
 }
 
 export type ErrorCallBack = (err: ErrorInfo) => void
-
+export interface PaginatedResult<T> {
+    isLast: boolean
+    hasNext: boolean
+    first(): PaginatedResult<T>
+    items(): Array<T>
+    next(): PaginatedResult<T>
+}
+export class Param {
+    key: string
+    value: string
+}
 
 
 
