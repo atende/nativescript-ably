@@ -1,4 +1,6 @@
 import * as api from "../../api/channel"
+import {Presence} from "../../api/presence"
+import {Param, PaginatedResult} from "../../api/common"
 import {EventEmitter, ErrorInfo} from "../../api/common"
 
 import {Observable} from "rxjs/Observable"
@@ -26,7 +28,7 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
     get name(): string {
         return this.facade.name
     }
-    get presence(): api.Presence {
+    get presence(): Presence {
         return this.facade.presence
     }
 
@@ -88,13 +90,34 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
             this.facade.unsubscribe(listener)
         }
     }
+    /**
+     * TODO Implement History API
+     */
+    history(options: Param[]): PaginatedResult<api.Message> {
+        return
+    }
+    /**
+     * Attach to this channel ensuring the channel is created in the Ably system and all messages published on the channel 
+     * will be received by any channel listeners registered using subscribe()
+     */
+    attach(){
+        this.facade.attach()
+    }
+    
+    /**
+     * Detach from this channel. Any resulting channel state change will be emitted to any listeners registered 
+     * using the **on** or **once** methods.
+     */
+    detach(){
+        this.facade.detach()
+    }
 }
 
 // TODO implementar channels
 export class Channels implements api.Channels {
     constructor(private facade: any) {
     }
-    get(channelName: string): Channel {
+    get(channelName: string): api.Channel {
         let channel = this.facade.get(channelName)
         return new Channel(channel)
     }
