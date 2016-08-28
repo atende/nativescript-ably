@@ -74,7 +74,7 @@ export class Connection extends EventEmitter<api.ConnectionState, api.Connection
                     observer.next()
                 },
                 onError(reason: any) {
-                    observer.throw(reason)
+                    observer.error(reason)
                 }
             })
             this.facade.ping(listener)

@@ -6,7 +6,7 @@ export declare class Connection extends EventEmitter<api.ConnectionState, api.Co
     protected factory: (callback: (param: any) => void) => any;
     id: string;
     state: api.ConnectionState;
-    errorReason: ErrorInfo;
+    reason: ErrorInfo;
     key: string;
     recoverKey: string;
     serial: number;

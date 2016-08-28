@@ -5,9 +5,8 @@ import {EventEmitter, ErrorInfo} from "../../api/common"
 
 import {Observable} from "rxjs/Observable"
 
-
 export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> implements api.Channel {
-    protected factory = function(callback: (param: any) => void): any {
+    protected factory = function (callback: (param: any) => void): any {
         let listener = new io.ably.lib.realtime.ChannelStateListener({
             onChannelStateChanged: function (changed: any) {
                 callback(changed)
@@ -39,10 +38,15 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
                     observer.next()
                 },
                 onError: function (error: any) {
-                    observer.throw(error)
+                    observer.error(error)
                 }
             })
-            this.facade.publish(name, data, listener)
+            try {
+                this.facade.publish(name, data, listener)
+            } catch (ex) {
+                observer.error(ex)
+            }
+
         })
 
 
@@ -54,25 +58,39 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
                     observer.next()
                 },
                 onError: function (error: any) {
-                    observer.throw(error)
+                    observer.error(error)
                 }
             })
-            this.facade.publish(message, listener)
+            try {
+                this.facade.publish(message, listener)
+            } catch (ex) {
+                observer.error(ex)
+            }
         })
 
     }
     subscribe(name?: string | string[]): Observable<api.Message> {
         return Observable.create(observer => {
-            let listener = new io.ably.lib.realtime.Channel.MessageListener({
-                onMessage: function (message: api.Message) {
-                    observer.next(message)
+            try {
+                let listener = new io.ably.lib.realtime.Channel.MessageListener({
+                    onMessage: function (message: api.Message) {
+                        observer.next(message)
+                    }
+                })
+                if (name) {
+                    this.facade.subscribe(name, listener)
+                } else {
+                    this.facade.subscribe(listener)
                 }
-            })
-            if (name) {
-                this.facade.subscribe(name, listener)
-            } else {
-                this.facade.subscribe(listener)
+                var me = this;
+                // Disposable
+                return function () {
+                    me.facade.unsubscribe();
+                };
+            }catch(ex){ // Normalize possible exceptions on Java to Observable catch in Javascript
+                observer.error(ex)
             }
+            
         })
 
     }
@@ -100,15 +118,15 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
      * Attach to this channel ensuring the channel is created in the Ably system and all messages published on the channel 
      * will be received by any channel listeners registered using subscribe()
      */
-    attach(){
+    attach() {
         this.facade.attach()
     }
-    
+
     /**
      * Detach from this channel. Any resulting channel state change will be emitted to any listeners registered 
      * using the **on** or **once** methods.
      */
-    detach(){
+    detach() {
         this.facade.detach()
     }
 }

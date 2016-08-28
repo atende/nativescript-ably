@@ -1,4 +1,4 @@
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 export interface TokenParams {
     capability: any;
     clientId: string;
@@ -43,11 +43,23 @@ export declare enum LogLevel {
     WARN = 5,
     ERROR = 6,
 }
-export declare abstract class EventEmitter<Filter, Event> {
+export declare abstract class EventEmitter<Listener, Event> {
     protected facade: any;
     protected factory: (callback: (param: any) => void) => any;
-    on(listenerType?: Filter): Observable<Event>;
-    off(listenerType?: Filter): Observable<Event>;
-    once(listenerType?: Filter): Observable<Event>;
+    on(listener?: Listener): Observable<Event>;
+    off(listener?: Listener): Observable<Event>;
+    once(listener?: Listener): Observable<Event>;
+    emit(event: Event, ...args: any[]): void;
 }
 export declare type ErrorCallBack = (err: ErrorInfo) => void;
+export interface PaginatedResult<T> {
+    isLast: boolean;
+    hasNext: boolean;
+    first(): PaginatedResult<T>;
+    items(): Array<T>;
+    next(): PaginatedResult<T>;
+}
+export declare class Param {
+    key: string;
+    value: string;
+}
