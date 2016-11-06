@@ -7,10 +7,10 @@ export declare class Channel extends EventEmitter<api.ChannelState, api.ChannelS
     protected facade: any;
     protected factory: (callback: (param: any) => void) => any;
     constructor(facade: any);
-    state: string;
-    reason: ErrorInfo;
-    name: string;
-    presence: Presence;
+    readonly state: string;
+    readonly reason: ErrorInfo;
+    readonly name: string;
+    readonly presence: Presence;
     publishData(name: string, data: any): Observable<void>;
     publishMessage(message: api.Message | api.Message[]): Observable<void>;
     subscribe(name?: string | string[]): Observable<api.Message>;

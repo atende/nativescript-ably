@@ -1,4 +1,5 @@
-import {Auth, TokenParams, ErrorInfo} from "./common"
+import {ErrorInfo} from "./common"
+import {Auth, TokenParams} from "./auth";
 import {Channels} from "./channel"
 import {Connection} from "./connection"
 
