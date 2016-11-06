@@ -12,7 +12,7 @@ To goal is to separate API from implementation:
 * **ably.d.ts** provide typescript definition derived from the API.
 
 The application just need to import **nativescript-ably** module.
-Exemple:
+Example:
 
    import {AblyRealtime, Message, ConnectionStateChange, ConnectionState} from "nativescript-ably"
 
@@ -22,6 +22,8 @@ You should not:
 
     Import the API folder, unless you are exposing the API in a implementation
     Import the implementation folder, unless you know what you are doing :-)
+
+**Android implemetation will be added first, while learning the API, after tests IOS will be added**
 
 ### Demo
 
@@ -60,11 +62,3 @@ Then use any of the available options from the `tns` command line:
 * [Emulate your project](https://github.com/NativeScript/nativescript-cli#emulate-your-project)
 * [Run your project](https://github.com/NativeScript/nativescript-cli#run-your-project)
 * [Full list of commands](https://github.com/NativeScript/nativescript-cli#the-commands)
-
-## Publish
-
-When you have everything ready to publish:
-
-* Bump the version number in `package.json`
-* `npm run build` - **very important** - ensure the latest is built **before** you publish
-* `npm publish`
