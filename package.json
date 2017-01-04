@@ -1,6 +1,6 @@
 {
   "name": "nativescript-ably",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A wrapper for ably.io realtime comunication system",
   "main": "ably.js",
   "typings": "ably.d.ts",
