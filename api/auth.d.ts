@@ -20,11 +20,11 @@ export interface AuthOptions {
     useTokenAuth?: boolean;
 }
 export interface TokenDetails {
-    token: string;
-    expires: number;
-    issued: number;
-    capability: any;
-    clientId: string;
+    token?: string;
+    expires?: number;
+    issued?: number;
+    capability?: any;
+    clientId?: string;
 }
 export interface TokenRequest {
     keyName: string;
@@ -38,6 +38,7 @@ export interface TokenRequest {
 export interface Auth {
     clientId: string;
     authorize(tokenParams: TokenParams, authOptions: AuthOptions, callback: (err: ErrorInfo, tokenDetails: TokenDetails) => void): any;
+    createTokenRequest(tokenParams: TokenParams, authOptions: AuthOptions, callBack: (err: ErrorInfo, tokenRequest: TokenRequest) => void): any;
     createTokenRequest(tokenParams: TokenParams, authOptions: AuthOptions, callBack: (err: ErrorInfo, tokenRequest: TokenRequest) => void): any;
     requestToken(tokenParams: TokenParams, authOptions: AuthOptions, callback: (err: ErrorInfo, tokenDetails: TokenDetails) => void): any;
 }

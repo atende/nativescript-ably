@@ -16,6 +16,7 @@ export class AblyRealtime extends api.AblyRealtime {
         this.facade = new io.ably.lib.realtime.AblyRealtime(options)
         this.connection = new Connection(this.facade.connection);
         this.channels = new Channels(this.facade.channels);
+        this.auth = this.facade.auth
     }
 
     // TODO implement time
