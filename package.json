@@ -1,6 +1,6 @@
 {
   "name": "nativescript-ably",
-  "version": "0.0.2",
+  "version": "0.1.2",
   "description": "A wrapper for ably.io realtime comunication system",
   "main": "ably.js",
   "typings": "ably.d.ts",
@@ -10,7 +10,9 @@
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc --outDir dist",
+    "copyfiles": "cp -rf package.json dist && cp -rf README.md dist && cp -rf LICENSE dist",
+    "dist": "npm run build && npm run copyfiles && cd dist && npm publish"
   },
   "repository": {
     "type": "git",
