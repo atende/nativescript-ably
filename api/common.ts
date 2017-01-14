@@ -1,4 +1,4 @@
-import {Observable} from "rxjs";
+import {Observable} from "rxjs/Observable";
 
 export interface ErrorInfo {
     code: number
@@ -93,8 +93,10 @@ export interface PaginatedResult<T> {
     next(): PaginatedResult<T>
 }
 export class Param {
-    key: string
-    value: string
+    constructor(public key: string, public value: string) {}
+    toString() {
+        return `{${this.key}, ${this.value}}`
+    }
 }
 
 

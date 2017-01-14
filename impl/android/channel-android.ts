@@ -1,9 +1,9 @@
 import * as api from "../../api/channel"
-import {Presence} from "../../api/presence"
-import {Param, PaginatedResult} from "../../api/common"
-import {EventEmitter, ErrorInfo} from "../../api/common"
+import { Presence } from "../../api/presence"
+import { Param, PaginatedResult } from "../../api/common"
+import { EventEmitter, ErrorInfo } from "../../api/common"
 
-import {Observable} from "rxjs/Observable"
+import { Observable } from "rxjs/Observable"
 
 export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> implements api.Channel {
     protected factory = function (callback: (param: any) => void): any {
@@ -14,7 +14,7 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
         })
         return listener;
     }
-    constructor(protected facade: any) {
+    constructor(protected facade: any, protected key: string) {
         super()
     }
 
@@ -30,6 +30,8 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
     get presence(): Presence {
         return this.facade.presence
     }
+
+    private worker: Worker
 
     publishData(name: string, data: any): Observable<void> {
         return Observable.create(observer => {
@@ -87,10 +89,10 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
                 return function () {
                     me.facade.unsubscribe();
                 };
-            }catch(ex){ // Normalize possible exceptions on Java to Observable catch in Javascript
+            } catch (ex) { // Normalize possible exceptions on Java to Observable catch in Javascript
                 observer.error(ex)
             }
-            
+
         })
 
     }
@@ -109,10 +111,31 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
         }
     }
     /**
-     * TODO Implement History API
+     * Retrieve the history of a channel
+     * TODO Paginate, and return Message Objects
      */
-    history(options: Param[]): PaginatedResult<api.Message> {
-        return
+    history(options: Param[]): Promise<any> {
+        // We need to run in a background thread and make sure more than one worker
+        // is not running at the same time
+        let promise = new Promise( (resolve, reject) => {
+            if (!this.worker) {
+                this.worker = new Worker("./history.worker")
+                this.worker.onmessage = (msg) => {
+                    resolve(msg)
+                    this.worker.terminate()
+                    this.worker = null
+                }
+                this.worker.onerror = (error) => {
+                    reject(error)
+                    this.worker.terminate()
+                    this.worker = null
+                }
+                this.worker.postMessage({key: this.key, channelId: this.name, params: options})
+            }else {
+                reject("History worker is already doing a job")
+            }
+        })
+        return promise;
     }
     /**
      * Attach to this channel ensuring the channel is created in the Ably system and all messages published on the channel 
@@ -133,11 +156,11 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
 
 // TODO implementar channels
 export class Channels implements api.Channels {
-    constructor(private facade: any) {
+    constructor(private facade: any, private key: string) {
     }
     get(channelName: string): api.Channel {
         let channel = this.facade.get(channelName)
-        return new Channel(channel)
+        return new Channel(channel, this.key)
     }
     release(channelName: string) {
         this.facade.release(channelName)

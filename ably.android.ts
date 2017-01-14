@@ -15,7 +15,10 @@ export class AblyRealtime extends api.AblyRealtime {
         super(options);
         this.facade = new io.ably.lib.realtime.AblyRealtime(options)
         this.connection = new Connection(this.facade.connection);
-        this.channels = new Channels(this.facade.channels);
+        if(typeof options === 'string')
+            this.channels = new Channels(this.facade.channels, <string>options);
+        else
+            this.channels = new Channels(this.facade.channels, options.key)
         this.auth = this.facade.auth
     }
 

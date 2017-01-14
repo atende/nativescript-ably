@@ -1,4 +1,14 @@
 
+declare module java {
+    export module util {
+        export class HashMap<T,V> {
+
+        }
+    }
+    export module lang {
+        export class Object {}
+    }
+}
 declare module io {
     export module ably {
         export module lib {
@@ -15,6 +25,7 @@ declare module io {
                     export class Channels extends java.util.HashMap<string, io.ably.lib.realtime.Channel> {
                         release(channelName: string);
                         suspendAll(error: io.ably.lib.types.ErrorInfo)
+                        get(channel: string)
                         onChannelMessage(transport: io.ably.lib.types.ITransport, msg: io.ably.lib.types.ProtocolMessage)
                     }
                 }
@@ -126,7 +137,7 @@ declare module io {
 
                 }
                 export class Param {
-
+                    constructor(key: string, param: string)
                 }
             }
             export module rest {

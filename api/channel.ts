@@ -39,8 +39,9 @@ export interface Channel extends EventEmitter<ChannelState, ChannelState> {
      * Gets a paginated set of historical messages for this channel. If the channel is configured to persist messages to disk, 
      * then message history will typically be available for 24 – 72 hours. If not, messages are only retained in memory 
      * by the Ably service for two minutes.
+     * TODO Paginate, and convert to message
      */
-    history(options: Param[]): PaginatedResult<Message>
+    history(options: Param[]): Promise<any>
     
     /**
      * Attach to this channel ensuring the channel is created in the Ably system and all messages published on the channel 
