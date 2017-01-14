@@ -41,7 +41,7 @@ export interface Channel extends EventEmitter<ChannelState, ChannelState> {
      * by the Ably service for two minutes.
      * TODO Paginate, and convert to message
      */
-    history(options: Param[]): Promise<any>
+    history(options: Param[]): Promise<any[]>
     
     /**
      * Attach to this channel ensuring the channel is created in the Ably system and all messages published on the channel 

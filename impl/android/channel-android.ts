@@ -114,7 +114,7 @@ export class Channel extends EventEmitter<api.ChannelState, api.ChannelState> im
      * Retrieve the history of a channel
      * TODO Paginate, and return Message Objects
      */
-    history(options: Param[]): Promise<any> {
+    history(options: Param[]): Promise<any[]> {
         // We need to run in a background thread and make sure more than one worker
         // is not running at the same time
         let promise = new Promise( (resolve, reject) => {

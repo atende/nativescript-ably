@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-    "build": "tsc --outDir dist",
+    "build": "tsc",
     "copyfiles": "cp -rf package.json dist && cp -rf README.md dist && cp -rf LICENSE dist",
     "dist": "npm run build && npm run copyfiles && cd dist && npm publish"
   },
